@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Hello {{secret}}!</h1>
+    {% for tickers_subscription in tickers_subscriptions %}
+    <div><p>{{ tickers_subscription.ticker.name }} says: <b>dd</b></p></div>
+    {% endfor %}
+{% endblock %}
