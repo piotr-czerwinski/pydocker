@@ -16,6 +16,7 @@ RUN pip install --trusted-host pypi.python.org -r requirements.txt
 EXPOSE 80
 
 ENV SECRET_KEY darude
+ENV FLASK_DEBUG 1
 ENV DATABASE_URL sqlite:////app/db/ap.db
 # Run app.py when the container launches
 CMD ["python3", "app.py"]

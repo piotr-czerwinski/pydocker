@@ -2,7 +2,7 @@
 
 {% block content %}
     <h1>Hello {{secret}}!</h1>
-    {% for tickers_subscription in tickers_subscriptions %}
-    <div><p><a href="{{ url_for('ticker', tickername=tickers_subscription.ticker.name) }}">{{ tickers_subscription.ticker.name }}</a> says: <b>{{ tickers_subscription.id }}</b></p></div>
+    {% for subscription in tickers_subscriptions %}
+    <div><p><a href="{{ url_for('ticker', tickername=subscription.ticker.name) }}">{{ subscription.ticker.name }}</a> says: {% include '_tickerSubscription.html' %}</p></div>
     {% endfor %}
 {% endblock %}

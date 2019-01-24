@@ -6,15 +6,20 @@ from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 from web.models import User, Ticker, TickerSubscription
 
+@app.before_request
+def before_request():
+       pass
+       #print(request)
+
 @app.route("/")
 @app.route("/index")
 def index():
        if current_user.is_authenticated:
               subscriptions = TickerSubscription.query.filter_by(user_id = current_user.id)
 
-              return render_template('index.html', title='Home', tickers_subscriptions = subscriptions)
+              return render_template('index2.html', title='Home', tickers_subscriptions = subscriptions)
        else:
-              return render_template('index.html', title='Home')
+              return render_template('index2.html', title='Home')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

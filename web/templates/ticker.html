@@ -5,7 +5,7 @@
     <hr>
     {% for subscription in subscriptions %}
     <p>
-    {{ subscription.id }}</b>
+        {% include '_tickerSubscription.html' %}
     </p>
     {% endfor %}
 {% endblock %}
