@@ -4,21 +4,17 @@ from web.forms import SubscribeTickerForm, LoginForm, RegistrationForm
 from flask_login import current_user, login_user, logout_user, login_required
 
 from werkzeug.urls import url_parse
-from web.models import User
+from web.models import User, Ticker, TickerSubscription
 
 @app.route("/")
 @app.route("/index")
 def index():
-       tickers_subscriptions = [
-              {
-                     'ticker': {'id': 1,'name': 'BTCUSD'}
-              },
-              {
-                     'ticker': {'id': 1,'name': 'USDPLN'}
-              }
-       ]
+       if current_user.is_authenticated:
+              subscriptions = TickerSubscription.query.filter_by(user_id = current_user.id)
 
-       return render_template('index.html', title='Home', tickers_subscriptions = tickers_subscriptions)
+              return render_template('index.html', title='Home', tickers_subscriptions = subscriptions)
+       else:
+              return render_template('index.html', title='Home')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -55,6 +51,15 @@ def register():
         flash('Congratulations, you are now a registered user!')
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
+
+@app.route('/ticker/<tickername>')
+@login_required
+def ticker(tickername):
+       ticker = Ticker.query.filter_by(name=tickername).first_or_404()
+       
+       subscriptions = TickerSubscription.query.filter_by(user_id = current_user.id).filter_by(ticker_id = ticker.id)
+    
+       return render_template('ticker.html', ticker=ticker, subscriptions=subscriptions)
 
 @app.route('/subscribeTicker', methods=['GET', 'POST'])
 @login_required
