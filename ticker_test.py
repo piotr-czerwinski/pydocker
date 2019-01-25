@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 import unittest
+import sqlalchemy
 from web import app, db
 from web.models import Ticker
 
@@ -19,8 +20,8 @@ class UserModelCase(unittest.TestCase):
 
         t2 = Ticker(name='BTCUSD')
         db.session.add(t2)
-        
-        db.session.commit()
+
+        self.assertRaises(sqlalchemy.exc.IntegrityError, db.session.commit)
 
 
 if __name__ == '__main__':
