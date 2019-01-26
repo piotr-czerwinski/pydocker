@@ -1,8 +1,12 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, IntegerField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
 from web.models import User
 
+
+class ProfileForm(FlaskForm):
+    ticker_per_page = IntegerField('Ticker per page')
+    submit = SubmitField('Update')
 
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])

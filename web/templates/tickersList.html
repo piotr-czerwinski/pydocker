@@ -4,4 +4,10 @@
     {% for ticker in tickers %}
     <div><p><a href="{{ url_for('ticker', tickername=ticker.name) }}">{{ ticker.name }}</a></p></div>
     {% endfor %}
+    {% if prev_url %}
+    <a href="{{ prev_url }}">Prev</a>
+    {% endif %}
+    {% if next_url %}
+    <a href="{{ next_url }}">Next</a>
+    {% endif %}
 {% endblock %}

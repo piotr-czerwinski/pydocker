@@ -1,6 +1,6 @@
 from web import app, db
 from flask import render_template, flash, redirect, url_for, request
-from web.forms import SubscribeTickerForm, LoginForm, RegistrationForm
+from web.forms import SubscribeTickerForm, LoginForm, RegistrationForm, ProfileForm
 from flask_login import current_user, login_user, logout_user, login_required
 
 from werkzeug.urls import url_parse
@@ -57,13 +57,33 @@ def register():
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
 
+@app.route('/profile', methods=['GET', 'POST'])
+@login_required
+def profile():
+       form = ProfileForm()
+       if form.validate_on_submit():
+              current_user.ticker_per_page = form.ticker_per_page.data
+              db.session.commit()
+              flash('Your changes have been saved.')
+              return redirect(url_for('profile'))
+       elif request.method == 'GET':
+              form.ticker_per_page.data = current_user.ticker_per_page
+       return render_template('profile.html', title='Edit Profile', form=form)
 
 @app.route('/ticker')
 @login_required
 def ticker_list():
-       tickers = Ticker.query.order_by(Ticker.name)
+       page = request.args.get('page', 1, type=int)
+       items_per_page = 2
+       if current_user.is_authenticated:
+              items_per_page = current_user.ticker_per_page
+       tickers = Ticker.query.order_by(Ticker.name).paginate(page, items_per_page, False)
+       next_url = url_for('ticker_list', page=tickers.next_num) \
+              if tickers.has_next else None
+       prev_url = url_for('ticker_list', page=tickers.prev_num) \
+              if tickers.has_prev else None
 
-       return render_template('tickersList.html', tickers=tickers)
+       return render_template('tickersList.html', tickers=tickers.items, next_url=next_url, prev_url=prev_url)
 
 @app.route('/ticker/<tickername>')
 @login_required
