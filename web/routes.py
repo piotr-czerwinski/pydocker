@@ -17,9 +17,9 @@ def index():
        if current_user.is_authenticated:
               subscriptions = TickerSubscription.query.filter_by(user_id = current_user.id)
 
-              return render_template('index2.html', title='Home', tickers_subscriptions = subscriptions)
+              return render_template('index.html', title='Home', tickers_subscriptions = subscriptions)
        else:
-              return render_template('index2.html', title='Home')
+              return render_template('index.html', title='Home')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -57,13 +57,21 @@ def register():
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
 
+
+@app.route('/ticker')
+@login_required
+def ticker_list():
+       tickers = Ticker.query.order_by(Ticker.name)
+
+       return render_template('tickersList.html', tickers=tickers)
+
 @app.route('/ticker/<tickername>')
 @login_required
-def ticker(tickername):
+def ticker(tickername = None):
        ticker = Ticker.query.filter_by(name=tickername).first_or_404()
-       
+
        subscriptions = TickerSubscription.query.filter_by(user_id = current_user.id).filter_by(ticker_id = ticker.id)
-    
+
        return render_template('ticker.html', ticker=ticker, subscriptions=subscriptions)
 
 @app.route('/subscribeTicker', methods=['GET', 'POST'])
