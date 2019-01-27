@@ -13,6 +13,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(128))
     ticker_per_page = db.Column(db.Integer, default=3 )
+    activated = db.Column(db.Boolean, default=False )
 
     subscriptions = db.relationship('TickerSubscription', backref='user', lazy='dynamic')
     # followed = db.relationship(

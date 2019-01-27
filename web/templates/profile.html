@@ -1,6 +1,14 @@
 {% extends "base.html" %}
 
 {% block content %}
+
+<h1>Status aktywacji:</h1>
+{% if current_user.activated %}
+    <p>Aktywny</p>
+{% else %}
+    <div><p><a href="{{ url_for('activate_user') }}">Wyślij e-mail aktywacyjny</a></p></div>
+{% endif %}
+
     <h1>Edit Profile {{ current_user.username}}</h1>
     <form action="" method="post">
         {{ form.hidden_tag() }}

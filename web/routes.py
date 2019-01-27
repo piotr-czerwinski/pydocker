@@ -43,6 +43,20 @@ def logout():
     logout_user()
     return redirect(url_for('index'))
 
+@app.route('/activateUser')
+def activate_user():
+       if not current_user.is_authenticated:
+              return redirect(url_for('index'))
+
+       elif current_user.activated:
+              flash('Już aktywowano!')
+              return redirect(url_for('index'))
+       send_activation_email()
+       return redirect(url_for('index'))
+
+def send_activation_email():
+       flash('Wysłano maila!')
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
