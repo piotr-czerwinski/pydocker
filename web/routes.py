@@ -1,8 +1,8 @@
-from web import app, db
+from web import app, db, mail
 from flask import render_template, flash, redirect, url_for, request
 from web.forms import SubscribeTickerForm, LoginForm, RegistrationForm, ProfileForm
 from flask_login import current_user, login_user, logout_user, login_required
-
+from sendgrid.helpers.mail import Mail, Email, Content
 from werkzeug.urls import url_parse
 from web.models import User, Ticker, TickerSubscription
 
@@ -56,6 +56,8 @@ def activate_user():
 
 def send_activation_email():
        flash('Wysłano maila!')
+       message = Mail(Email('piotr.czerw@gmail.com'), 'dindu', Email('piotr.czerw@gmail.com'), Content("text/plain", "and easy to do anywhere, even with Python"))
+       response = mail.client.mail.send.post(request_body=message.get())       
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():

@@ -8,3 +8,5 @@ class Config(object):
         'sqlite:///' + os.path.join(basedir, 'app.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     print(SQLALCHEMY_DATABASE_URI)
+    SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY')
+    SENDGRID_DEFAULT_FROM = os.getenv('SENDGRID_DEFAULT_FROM') or 'piotr.czerw@gmail.com'
