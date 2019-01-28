@@ -5,3 +5,4 @@ flask-migrate
 flask-login
 sendgrid
 pyjwt
+flask-bootstrap

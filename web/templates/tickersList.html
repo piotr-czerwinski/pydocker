@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block content %}
+{% block app_content  %}
     {% for ticker in tickers %}
     <div><p><a href="{{ url_for('ticker', tickername=ticker.name) }}">{{ ticker.name }}</a></p></div>
     {% endfor %}
