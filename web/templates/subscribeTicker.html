@@ -1,21 +1,14 @@
 {% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
 
 {% block app_content  %}
 <h1>Hi, {{ current_user.username }}. Subscribe!</h1>
 {% if current_user.activated %}
-<form action="" method="post" novalidate>
-    {{ form.hidden_tag() }}
-    <p>
-        {{ form.name.label }}<br>
-        {{ form.name(size=32) }}<br>
-        {% for error in form.name.errors %}
-        <span style="color: red;">[{{ error }}]</span>
-        {% endfor %}
-
-    </p>
-    <p>{{ form.weekend_check() }} {{ form.weekend_check.label }}</p>
-    <p>{{ form.submit() }}</p>
-</form>
+<div class="row">
+    <div class="col-md-4">
+        {{ wtf.quick_form(form) }}
+    </div>
+</div>
 {% else %}
     <div><p>Nieaktywny</p></div>
     <div><p><a href="{{ url_for('start_activation') }}">Wyślij e-mail aktywacyjny</a></p></div>
