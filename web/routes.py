@@ -1,15 +1,25 @@
 from web import app, db
-from flask import render_template, flash, redirect, url_for, request
+from flask import render_template, flash, redirect, url_for, request, g
 from web.forms import SubscribeTickerForm, LoginForm, RegistrationForm, ProfileForm
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 from web.models import User, Ticker, TickerSubscription
 from web.user_activation import send_activation_email, try_activate
+from datetime import datetime
+from flask_babel import get_locale
+from flask import jsonify
+from random import randint
+from collections import namedtuple
 
 @app.before_request
 def before_request():
-    pass
+    g.locale = str(get_locale())
     #print(request)
+
+@app.route('/api/getprice', methods=['POST'])
+def api_get_price():
+    return jsonify({'ticker' : request.form['name'],
+                    'price' : randint(1,100)})
 
 @app.route("/")
 @app.route("/index")
@@ -96,7 +106,7 @@ def profile():
         return redirect(url_for('profile'))
     elif request.method == 'GET':
         form.ticker_per_page.data = current_user.ticker_per_page
-    return render_template('profile.html', title='Edit Profile', form=form)
+    return render_template('profile.html', title='Edit Profile', form=form, now=datetime.utcnow())
 
 @app.route('/ticker')
 @login_required
@@ -111,7 +121,9 @@ def ticker_list():
     prev_url = url_for('ticker_list', page=tickers.prev_num) \
         if tickers.has_prev else None
 
-    return render_template('tickersList.html', tickers=tickers.items, next_url=next_url, prev_url=prev_url)
+    TickerListening = namedtuple('TickerListening','ticker price')
+    listenings = [TickerListening(ticker, randint(1,100)) for ticker in tickers.items]
+    return render_template('tickersList.html', listenings=listenings, next_url=next_url, prev_url=prev_url)
 
 @app.route('/ticker/<tickername>')
 @login_required

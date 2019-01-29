@@ -4,7 +4,10 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_bootstrap import Bootstrap
+from flask_moment import Moment
+from flask_babel import Babel
 import sendgrid
+from flask import request
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -15,6 +18,8 @@ login = LoginManager(app)
 login.login_view = 'login'
 mail = sendgrid.SendGridAPIClient(apikey=app.config['SENDGRID_API_KEY'])
 bootstrap = Bootstrap(app)
+babel = Babel(app)
+moment = Moment(app)
 
 from web import routes, models, errors
 
@@ -40,3 +45,8 @@ if not app.debug:
 
     app.logger.setLevel(logging.INFO)
     app.logger.info('Microblog startup')
+
+
+@babel.localeselector
+def get_locale():
+    return request.accept_languages.best

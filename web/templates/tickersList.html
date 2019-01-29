@@ -1,8 +1,22 @@
 {% extends "base.html" %}
 
 {% block app_content  %}
-    {% for ticker in tickers %}
-    <div><p><a href="{{ url_for('ticker', tickername=ticker.name) }}">{{ ticker.name }}</a></p></div>
+    {% for listening in listenings %}
+    <table class="table table-hover">
+        <tr>
+            <td width="70px">
+                <a href="{{ url_for('ticker', tickername=listening.ticker.name) }}"><span id="ticker_name_{{ listening.ticker.id }}">{{ listening.ticker.name }}</span></a>
+            </td>
+            <td>
+                <span id="ticker_price_{{ listening.ticker.id }}">{{ listening.price }}</span>
+            </td>
+            <td>
+                <span id="update_{{ listening.ticker.id }}"><a href="javascript:update_price(
+'#ticker_name_{{ listening.ticker.id }}',
+'#ticker_price_{{ listening.ticker.id }}');">Update</a></span>
+            </td>
+        </tr>
+    </table>
     {% endfor %}
     <nav aria-label="...">
         <ul class="pager">
@@ -18,4 +32,21 @@
             </li>
         </ul>
     </nav>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script>
+        function update_price(sourceElem, destElem) {            
+            // $(destElem).html('<img src="{{ url_for('static', filename='loading.gif') }}">');
+
+            $.post('/api/getprice', {
+                name: $(sourceElem).text()
+            }).done(function(response) {
+                $(destElem).text(response['price'])
+            }).fail(function() {
+                $(destElem).text("{{ _('Error: Could not contact server.') }}");
+            });
+        }
+    </script>
 {% endblock %}
