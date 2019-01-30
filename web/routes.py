@@ -1,6 +1,6 @@
 from web import app, db
 from flask import render_template, flash, redirect, url_for, request, g
-from web.forms import SubscribeTickerForm, ProfileForm
+from web.forms import SubscribeTickerForm, ProfileForm, SearchForm
 from flask_login import current_user, login_required
 from werkzeug.urls import url_parse
 from web.models import User, Ticker, TickerSubscription
@@ -12,6 +12,7 @@ from collections import namedtuple
 
 @app.before_request
 def before_request():
+    g.search_form = SearchForm()
     g.locale = str(get_locale())
     #print(request)
 
@@ -46,19 +47,24 @@ def profile():
 @app.route('/ticker')
 @login_required
 def ticker_list():
+    filter = request.args.get('q', None, type=str)
     page = request.args.get('page', 1, type=int)
+
     items_per_page = 2
     if current_user.is_authenticated:
         items_per_page = current_user.ticker_per_page
-    tickers = Ticker.query.order_by(Ticker.name).paginate(page, items_per_page, False)
-    next_url = url_for('ticker_list', page=tickers.next_num) \
+    if filter:
+        tickers = Ticker.query.filter(Ticker.name.like('%{filter}%'.format(filter = filter))).order_by(Ticker.name).paginate(page, items_per_page, False)            
+    else:
+        tickers = Ticker.query.order_by(Ticker.name).paginate(page, items_per_page, False)
+    next_url = url_for('ticker_list', page=tickers.next_num, q=filter) \
         if tickers.has_next else None
-    prev_url = url_for('ticker_list', page=tickers.prev_num) \
+    prev_url = url_for('ticker_list', page=tickers.prev_num, q=filter) \
         if tickers.has_prev else None
 
     TickerListening = namedtuple('TickerListening','ticker price')
     listenings = [TickerListening(ticker, randint(1,100)) for ticker in tickers.items]
-    return render_template('tickersList.html', listenings=listenings, next_url=next_url, prev_url=prev_url)
+    return render_template('tickersList.html', listenings=listenings, next_url=next_url, prev_url=prev_url, filter_term = filter)
 
 @app.route('/ticker/<tickername>')
 @login_required
@@ -78,3 +84,9 @@ def subscribe_ticker():
             form.name.data, form.weekend_check.data))
         return redirect(url_for('index'))
     return render_template('subscribeTicker.html', title='SubscribeTicker', form=form)
+
+@app.route('/search')
+def search():
+    if not g.search_form.validate():
+        return redirect(url_for('ticker_list'))
+    return redirect(url_for('ticker_list', q=g.search_form.q.data))

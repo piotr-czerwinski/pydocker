@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 
 {% block app_content  %}
+
+{% if filter_term %}
+    <h1>Filter: {{ filter_term }}</h1>
+{% endif %}
     {% for listening in listenings %}
     <table class="table table-hover">
         <tr>
