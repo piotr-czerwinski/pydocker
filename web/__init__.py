@@ -21,9 +21,15 @@ bootstrap = Bootstrap(app)
 babel = Babel(app)
 moment = Moment(app)
 
-from web import routes, models, errors
+from web import routes, models
 
 from web.models import User
+
+from web.errors import bp as errors_bp
+app.register_blueprint(errors_bp)
+
+from web.auth import bp as auth_bp
+app.register_blueprint(auth_bp, url_prefix='/auth')
 
 @login.user_loader
 def load_user(id):
