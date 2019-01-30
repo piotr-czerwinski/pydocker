@@ -21,7 +21,10 @@ bootstrap = Bootstrap(app)
 babel = Babel(app)
 moment = Moment(app)
 
-from web import routes, models
+from web import models
+
+from web.main import bp as main_bp
+app.register_blueprint(main_bp)
 
 from web.models import User
 

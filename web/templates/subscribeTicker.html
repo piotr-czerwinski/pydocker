@@ -11,6 +11,6 @@
 </div>
 {% else %}
     <div><p>Nieaktywny</p></div>
-    <div><p><a href="{{ url_for('start_activation') }}">Wyślij e-mail aktywacyjny</a></p></div>
+    <div><p><a href="{{ url_for('auth.start_activation') }}">Wyślij e-mail aktywacyjny</a></p></div>
 {% endif %}
 {% endblock %}

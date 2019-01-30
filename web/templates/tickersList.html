@@ -9,7 +9,7 @@
     <table class="table table-hover">
         <tr>
             <td width="70px">
-                <a href="{{ url_for('ticker', tickername=listening.ticker.name) }}"><span id="ticker_name_{{ listening.ticker.id }}">{{ listening.ticker.name }}</span></a>
+                <a href="{{ url_for('main.ticker', tickername=listening.ticker.name) }}"><span id="ticker_name_{{ listening.ticker.id }}">{{ listening.ticker.name }}</span></a>
             </td>
             <td>
                 <span id="ticker_price_{{ listening.ticker.id }}">{{ listening.price }}</span>

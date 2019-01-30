@@ -6,7 +6,7 @@
 {% if current_user.activated %}
     <p>Active</p>
 {% else %}
-    <div><p>Not activated <a href="{{ url_for('start_activation') }}">Send activation e-mail</a></p></div>
+    <div><p>Not activated <a href="{{ url_for('auth.start_activation') }}">Send activation e-mail</a></p></div>
 {% endif %}
 
     <h1>Edit Profile {{ current_user.username}}</h1>
