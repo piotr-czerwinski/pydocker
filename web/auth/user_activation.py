@@ -2,13 +2,14 @@ from web.mail_helper import send_html_email
 from flask import url_for, render_template
 from time import time
 import jwt
-from web import app, db
+from web import db
+from flask import current_app
 from web.models import User
 
 def get_user_activation_token(user, expires_in=600):
     return jwt.encode(
         {'activated_user_id': user.id, 'exp': time() + expires_in},
-        app.config['SECRET_KEY'], algorithm='HS256').decode('utf-8')
+        current_app.config['SECRET_KEY'], algorithm='HS256').decode('utf-8')
 
 def get_user_for_activation_password_token(token):
     try:

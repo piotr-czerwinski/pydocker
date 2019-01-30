@@ -1,4 +1,4 @@
-from web import db
+from web import db, login
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 
@@ -48,3 +48,6 @@ class TickerSubscription(db.Model):
     def __repr__(self):
         return '<Ticker {}>'.format(self.ticker_id)
 
+@login.user_loader
+def load_user(id):
+    return User.query.get(int(id))

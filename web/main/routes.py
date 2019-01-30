@@ -1,4 +1,4 @@
-from web import app, db
+from web import db
 from web.main import bp
 from flask import render_template, flash, redirect, url_for, request, g
 from web.main.forms import SubscribeTickerForm, ProfileForm, SearchForm
