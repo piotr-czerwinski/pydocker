@@ -31,7 +31,7 @@ def create_app(config_class=Config):
     moment.init_app(app)
     babel.init_app(app)
 
-    mail = sendgrid.SendGridAPIClient(apikey=app.config['SENDGRID_API_KEY'])
+    app.mail = sendgrid.SendGridAPIClient(apikey=app.config['SENDGRID_API_KEY'])
 
     from web.main import bp as main_bp
     app.register_blueprint(main_bp)

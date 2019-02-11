@@ -1,22 +1,29 @@
 # Use an official Python runtime as a parent image
-FROM python:3.6-slim
+FROM python:3.6-alpine
+
+RUN adduser -D tickerinfo
 
 # Set the working directory to /app
+# WORKDIR /home/tickerinfo
 WORKDIR /app
 
 # Copy the current directory contents into the container at /app
-COPY *.py /app/
-COPY requirements.txt /app
-COPY web /app/web
 
-# Install any needed packages specified in requirements.txt
-RUN pip install --trusted-host pypi.python.org -r requirements.txt
+COPY requirements.txt requirements.txt
 
-# Make port 80 available to the world outside this container
-EXPOSE 80
+RUN python -m venv venv
+RUN venv/bin/pip install -r requirements.txt
+RUN venv/bin/pip install gunicorn pymysql
 
-ENV SECRET_KEY darude
-ENV FLASK_DEBUG 1
-ENV DATABASE_URL sqlite:////app/db/ap.db
-# Run app.py when the container launches
-CMD ["python3", "app.py"]
+COPY web web
+COPY migrations migrations
+COPY app.py config.py boot.sh ./
+RUN chmod +x boot.sh
+
+#RUN chown -R tickerinfo:tickerinfo ./
+#USER tickerinfo
+
+ENV FLASK_APP app.py
+
+EXPOSE 5000
+ENTRYPOINT ["./boot.sh"]

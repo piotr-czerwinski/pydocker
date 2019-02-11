@@ -2,7 +2,7 @@ version: "3"
 services:
   web:
     # replace username/repo:tag with your name and image details
-    image: piotrczerwinski/pydocker:0.0.1
+    image: piotrczerwinski/pydocker:latest
     deploy:
       replicas: 2
       resources:
@@ -12,7 +12,7 @@ services:
       restart_policy:
         condition: on-failure
     ports:
-      - "4000:80"
+      - "4000:5000"
     networks:
       - webnet
   visualizer:

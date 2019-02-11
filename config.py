@@ -12,4 +12,4 @@ class Config(object):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     print(SECRET_KEY)
     SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY')
-    SENDGRID_DEFAULT_FROM = os.getenv('SENDGRID_DEFAULT_FROM') or 'piotr.czerw@gmail.com'
+    SENDGRID_DEFAULT_FROM = os.getenv('SENDGRID_DEFAULT_FROM')
