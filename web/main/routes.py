@@ -91,3 +91,9 @@ def search():
 def api_get_price():
     return jsonify({'ticker' : request.form['name'],
                     'price' : randint(1,100)})
+
+@bp.route('/ticker/<tickername>/history')
+@login_required
+def ticker_history(tickername):
+    random_history = [randint(1,100) for i in range(1,50) ]
+    return render_template('tickerHistory.html', labels = list(range(1,50)), values = random_history)

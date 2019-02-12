@@ -9,7 +9,9 @@
     <table class="table table-hover">
         <tr>
             <td width="70px">
-                <a href="{{ url_for('main.ticker', tickername=listening.ticker.name) }}"><span id="ticker_name_{{ listening.ticker.id }}">{{ listening.ticker.name }}</span></a>
+                <span class="ticker_history_popup">
+                    <a href="{{ url_for('main.ticker', tickername=listening.ticker.name) }}"><span id="ticker_name_{{ listening.ticker.id }}">{{ listening.ticker.name }}</span></a>
+                </span>
             </td>
             <td>
                 <span id="ticker_price_{{ listening.ticker.id }}">{{ listening.price }}</span>
@@ -52,5 +54,48 @@
                 $(destElem).text("{{ _('Error: Could not contact server.') }}");
             });
         }
+
+        $(function() {
+        var timer = null;
+        var xhr = null;
+            $('.ticker_history_popup').hover(
+                function(event) {
+                    // mouse in event handler
+                    var elem = $(event.currentTarget);
+                    timer = setTimeout(function() {
+                        timer = null;
+                        xhr = $.ajax(
+                        '/ticker/' + elem.first().text().trim() + '/history').done(
+                            function(data) {
+                                xhr = null;
+                                elem.popover({
+                                    trigger: 'manual',
+                                    html: true,
+                                    animation: false,
+                                    container: elem,
+                                    content: data
+                                }).popover('show');
+                                flask_moment_render_all();
+                            }
+                        );
+                    }, 1000);
+                },
+                function(event) {
+                    // mouse out event handler
+                    var elem = $(event.currentTarget);
+                    if (timer) {
+                        clearTimeout(timer);
+                        timer = null;
+                    }
+                    else if (xhr) {
+                        xhr.abort();
+                        xhr = null;
+                    }
+                    else{
+                        elem.popover('destroy');
+                    }
+                }
+            )
+    });
     </script>
 {% endblock %}
