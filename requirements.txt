@@ -9,3 +9,4 @@ flask-bootstrap
 flask-moment
 flask-babel
 python-dotenv
+rq

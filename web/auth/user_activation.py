@@ -5,6 +5,7 @@ import jwt
 from web import db
 from flask import current_app
 from web.models import User
+from web.task_scheduler import launch_task
 
 def get_user_activation_token(user, expires_in=600):
     return jwt.encode(
@@ -13,16 +14,19 @@ def get_user_activation_token(user, expires_in=600):
 
 def get_user_for_activation_password_token(token):
     try:
-        id = jwt.decode(token, app.config['SECRET_KEY'],
+        id = jwt.decode(token, current_app.config['SECRET_KEY'],
                         algorithms=['HS256'])['activated_user_id']
-    except:
+    except Exception as e:
         return
     return User.query.get(id)
 
 def send_activation_email(user):
     token = get_user_activation_token(user)
 
-    send_html_email(user.email, 'Activate', render_template('email/activate.html', user=user, token=token))
+    launch_task(user, 'send_email', 'Sending activation emails..', user.email, 'Activate', render_template('email/activate.html', user=user, token=token))
+    db.session.commit()
+
+    #send_html_email(user.email, 'Activate', render_template('email/activate.html', user=user, token=token))
 
 def try_activate(token):
     user = get_user_for_activation_password_token(token)

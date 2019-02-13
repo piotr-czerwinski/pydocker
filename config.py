@@ -13,3 +13,4 @@ class Config(object):
     print(SECRET_KEY)
     SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY')
     SENDGRID_DEFAULT_FROM = os.getenv('SENDGRID_DEFAULT_FROM')
+    REDIS_URL = os.environ.get('REDIS_URL') or 'redis://'

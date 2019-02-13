@@ -9,8 +9,10 @@ from flask_login import LoginManager
 from flask_bootstrap import Bootstrap
 from flask_moment import Moment
 from flask_babel import Babel
-import sendgrid
 from flask import request
+from redis import Redis
+import rq
+import sendgrid
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -32,6 +34,9 @@ def create_app(config_class=Config):
     babel.init_app(app)
 
     app.mail = sendgrid.SendGridAPIClient(apikey=app.config['SENDGRID_API_KEY'])
+
+    app.redis = Redis.from_url(app.config['REDIS_URL'])
+    app.task_queue = rq.Queue('tickerinfo-tasks', connection=app.redis)
 
     from web.main import bp as main_bp
     app.register_blueprint(main_bp)

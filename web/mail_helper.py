@@ -1,5 +1,6 @@
 from sendgrid.helpers.mail import Mail, Email, Content
 from flask import current_app
+from web.task_scheduler import launch_task
 
 def send_html_email(to, subject, content):
     sender = current_app.config['SENDGRID_DEFAULT_FROM']
