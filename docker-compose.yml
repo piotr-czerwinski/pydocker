@@ -1,20 +1,36 @@
 version: "3"
 services:
   web:
-    # replace username/repo:tag with your name and image details
-    image: piotrczerwinski/pydocker:latest
+    image: pydocker:latest
+    build:
+      context: .
     deploy:
       replicas: 2
       resources:
         limits:
           cpus: "0.1"
-          memory: 50M
+          memory: 100M
       restart_policy:
         condition: on-failure
     ports:
-      - "4000:5000"
+      - "8000:5000"
     networks:
       - webnet
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - REDIS_URL=${REDIS_URL}
+      - SECRET_KEY=${SECRET_KEY}
+  web_worker:
+    image: pydocker:latest
+    networks:
+      - webnet
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - REDIS_URL=${REDIS_URL}
+      - SENDGRID_API_KEY=${SENDGRID_API_KEY}
+      - SENDGRID_DEFAULT_FROM=${SENDGRID_DEFAULT_FROM}
+      - SECRET_KEY=${SECRET_KEY}
+    entrypoint: venv/bin/rq worker -u ${REDIS_URL} tickerinfo-tasks
   visualizer:
     image: dockersamples/visualizer:stable
     ports:
@@ -27,17 +43,36 @@ services:
     networks:
       - webnet
   redis:
-    image: redis
+    image: redis:3-alpine
     ports:
       - "6379:6379"
     volumes:
-      - "/home/piotr/Docker/data:/data"
+      #- "../volumes/pydocker/redis/data:/data"
+      - redisvolume:/data
     deploy:
       placement:
         constraints: [node.role == manager]
     command: redis-server --appendonly yes
     networks:
       - webnet
+  mysql:
+    image: mysql/mysql-server:5.7
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_RANDOM_ROOT_PASSWORD=yes
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    volumes:
+      - datavolume:/var/lib/mysql
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+    networks:
+      - webnet
 networks:
   webnet:
-
+volumes:
+  datavolume:
+  redisvolume:
